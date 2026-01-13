@@ -44,9 +44,55 @@ Example *storage run* comand
         - Stream the log output of running services;
         - Run a one-off command on a service;
 
-### 1.1.5 Docker Network
+### 1.1.5 Docker Networking
+    At its core, Docker networking is the system that allows Docker containers to communicate with each other, with the Docker host, and even with the outside world.
+    When you create a container, Docker gives it its own isolated network environment. This means each container has its own IP address and network interfaces. By default, containers running on the same host can communicate between them without needing to expose ports to the host machine.
+
+    - each container gets its own network namespace, complete with its own network interfaces, IP addresses and routing tables, and this is why a container can't see the network traffic of another container or the host.
+    - to connect a container's isolated namespace to the host's network, Docker uses a veth pair (Virtual Ethernet Devices).
+    - Docker uses the host's iptables rules (a firewall utility) to manage port mapping and network address translation (NAT). When you expose a port, iptables rules are created to forward traffic from one port to another inside the container.
+
+    -Drivers:
+        * bridge (Default): creates a private, internal network on the host.
+        * host: this driver removes network isolation entirely.
+        * none: this driver gives the container a network stack but attaches it to no network. Completely isolated and cannot communicate with any other container.
+        *overlay: This driver is used for multi-host networking. It creates a distributed network that spans multiple Docker hosts, allowing containers on different hosts to communicate directly and securely.
+
+    -Command:
+        * docker network: is the main command that would allow you to create, manage and configure a Docker Network.
+            - connect: connect a container to a network;
+            - create: creates a network;
+            - disconnect: disconnect a container from a network;
+            - inspect: display detailed info on one or more networks;
+            - ls: list networks;
+            - prune: remove all unused networks;
+            - rm: remove one or more networks;
 
 ## 1.2 Docker vs Virtual Machines
+- VM:
+    - Virtualizes hardware
+    - Each VM runs its own full OS (Linux/Windows) and kernel
+    - Managed by a hypervisor (VMware, VirtualBox, Hyper-V)
+    - Boots like a real computer
+    - Startup time: 30 seconds to several minutes
+    - Each VM needs dedicated RAM and disk for a full OS
+    - Strong isolation (hardware-level)
+    - If one VM is compromised, others are usually safe
+    - Can run any OS (on any host OS)
+    - VM images are large (GBs)
+    - Moving them is slow and heavy
 
+- Docker container:
+    - Virtualizes the operating system
+    - Containers, share the host OS kernel and only include the app + dependencies
+    - Starts a process, not an OS
+    - Startup time: milliseconds to a few seconds
+    - Containers share, host OS and libraries where possible
+    - Much lower memory and disk usage
+    - Process-level isolation
+    - Containers share the kernel
+    - Must use the host OS kernel, linux containers need Linux host
+    - Images are smaller (MBs–hundreds of MBs)
+    
 ## 1.3 Docker Architectures
 
