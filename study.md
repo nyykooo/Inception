@@ -68,6 +68,27 @@ Example *storage run* comand
             - prune: remove all unused networks;
             - rm: remove one or more networks;
 
+#### 1.1.5.1 Docker Network vs Host Network
+    The main difference between Docker Network (Bridge by default) and Host is the containers isolation and performance.
+    
+    *Host: 
+        -higher performance;
+        -less isolation;
+        -container shares directly the host network stack;
+        -there is no NAT (Network Address Translation) neither ports exposed through "-p";
+        -high security risk because any container's service is visible in host;
+
+    *Docker: 
+        -lower performance;
+        -more isolation;
+        -uses a virtualized and isolated network;
+        -uses NAT and port mapping;
+        -better access control between containers;
+        -slightly worse performance (overhead of bridge + iptables);
+        -more security and organization;
+
+    PS: overhead of bridge + iptables -> overhead is all the extra processing that the system needs to do in addition to directly sending the network packet. In Docker Network this overhead comes from two main components, bridge and iptables, when a docker uses a bridge network it receives an virtual ethernet (veth), this interface connects the container to a virtual bridge and the bridge works like a virtual switch and all this process (copy package, exec validations, add minimum latency) consumes more from the process. And in the case of iptables, to allow conainers to use external network, docker creates some rules in iptables that translate the IP address from container to the IP address of the host, filter the packages, and some other rules, that consumes more from CPU and add some microseconds of latency.
+
 ## 1.2 Docker vs Virtual Machines
 - VM:
     - Virtualizes hardware
