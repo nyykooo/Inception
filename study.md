@@ -115,5 +115,14 @@ Example *storage run* comand
     - Must use the host OS kernel, linux containers need Linux host
     - Images are smaller (MBs–hundreds of MBs)
     
-## 1.3 Docker Architectures
+## 1.3 Docker Compose commands
+    -docker ps: shows a list of the containers;
+    -docker compose build: Build or rebuild services;
+    -docker compose up: Create and start containers;
+    -docker compose down: Stop and remove containers, networks;
+    -docker compose restart: Restart service containers;
+    -docker compose start: Start services;
+    -docker compose stop: Stop services;
+    -docker compose volumes: List volumes;
+    -docker compose images: List images used by the created containers;
 
