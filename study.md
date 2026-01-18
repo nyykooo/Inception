@@ -126,3 +126,10 @@ Example *storage run* comand
     -docker compose volumes: List volumes;
     -docker compose images: List images used by the created containers;
 
+# 2 Digital Certificate
+    A Self-Signed Digital Certificate is a security certificate created and signed by the entity (person, server, organization) that uses it, rather than a Certificate Authority (CA). It is useful for testing and internal environments. 
+
+# 3 Keys
+    In terms of keys:
+        - Public Key: Stored in the certificate and used to encrypt data sent to the server.
+        - Private Key: Kept secret by the server and used to decrypt data that has been encrypted with the public key.
