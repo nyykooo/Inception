@@ -133,3 +133,38 @@ Example *storage run* comand
     In terms of keys:
         - Public Key: Stored in the certificate and used to encrypt data sent to the server.
         - Private Key: Kept secret by the server and used to decrypt data that has been encrypted with the public key.
+
+# 4 Secrets vs Env
+## Env -> Environment vars
+    O arquivo .env é um arquivo de configuração de ambiente, não um cofre de segredos.
+        - parametrizar comportamento
+        - evitar valores hardcoded
+        - facilitar troca de ambiente (dev/stage/prod)
+        - nenhuma senha
+        - nenhum token
+        - nada que cause dano se vazar
+        - Values exported to all containers processes;
+        - simple to use;
+        - good for non sensible configs;
+        - easy to override;
+        - compatible with any runtime;
+    Used by:
+        - Makefile
+        - docker-compose
+        - Nginx
+        - WordPress (config geral)
+
+## Secrets
+    Secrets são dados sensíveis entregues em runtime, fora do ambiente e fora da imagem.
+        - senhas, chaves privadas, tokens, certificados, passwords de banco;
+        - não ficam na imagem;
+        - não ficam no ambiente;
+        - não aparecem em logs por padrão;
+        - files created in runtime, usually readonly, with sensible data;
+        - can be removed without rebuild;
+        - can have strict permissions;
+        - modern safe pattern;
+    Used by:
+        - MariaDB (senhas)
+        - WordPress (DB password, salts)
+        - PHP (tokens externos)
