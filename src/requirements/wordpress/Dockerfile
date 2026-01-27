@@ -33,4 +33,6 @@ WORKDIR /var/www/html
 
 RUN chmod +x ./tools/wp-cli.sh
 
+EXPOSE 9000
+
 CMD ["./tools/wp-cli.sh"]
