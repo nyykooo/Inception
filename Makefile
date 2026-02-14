@@ -15,3 +15,6 @@ stop:
 	docker compose -f docker-compose.yml stop $(c)
 restart:
 	docker compose -f docker-compose.yml restart
+
+logs:
+	cd srcs && docker-compose logs

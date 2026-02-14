@@ -28,11 +28,11 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     mv wp-cli.phar /usr/local/bin/wp
 
 COPY conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
-
+COPY ./tools/wp-cli.sh /usr/local/bin/wp-cli.sh
 WORKDIR /var/www/html
 
-RUN chmod +x ./tools/wp-cli.sh
+RUN chmod +x /usr/local/bin/wp-cli.sh
 
 EXPOSE 9000
 
-CMD ["./tools/wp-cli.sh"]
+CMD ["/usr/local/bin/wp-cli.sh"]

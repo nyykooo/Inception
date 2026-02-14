@@ -11,10 +11,13 @@ RUN apt-get -y update && \
 # Install Nginx web server and OpenSSL for creating certificates
 apt-get install -y nginx openssl
 
-RUN ./tools/ssl.sh
+RUN pwd
+# RUN ./tools/ssl.sh
 
 # The COPY instruction copies a file from source to destiny
 COPY ./conf/nginx.conf /etc/nginx/conf.d
 COPY ./tools/init.sh /usr/local/bin/
+
+EXPOSE 443
 
 CMD ["/usr/local/bin/init.sh"]
