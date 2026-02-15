@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
-set -e
+MYSQL_DATABASE=mariadb
+MYSQL_USER=ncampbel
 
 # The code bellow is included in mariadb image, but as I'm creating my own image,
 # I must guarantee that the mariadb is configured before creating a DB in it
@@ -17,17 +18,19 @@ if [ ! -d "/var/lib/mysql/$MYSQL_DATABASE" ]; then
         sleep 1
     done
 
+  
     mysql --socket=/var/run/mysqld/mysqld.sock -u root <<EOF
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${MYSQL_ROOT_PASSWORD}';
-CREATE DATABASE IF NOT EXISTS ${MYSQL_DATABASE};
-CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';
-GRANT ALL PRIVILEGES ON ${MYSQL_DATABASE}.* TO '${MYSQL_USER}'@'%';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$DB_ROOT_PASSWORD';
+CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
+CREATE USER IF NOT EXISTS '$MYSQL_USER'@'%' IDENTIFIED BY '$DB_USER_PASSWORD';
+GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'%';
 FLUSH PRIVILEGES;
+
 EOF
 # - FLUSH PRIVILEGES makes the changes effective immediately
 
     # Shut down the temporary background MariaDB process
-    mysqladmin --socket=/var/run/mysqld/mysqld.sock -u root -p"${MYSQL_ROOT_PASSWORD}" shutdown
+    mysqladmin --socket=/var/run/mysqld/mysqld.sock -u root -p"$DB_ROOT_PASSWORD" shutdown
 fi
 
 # Start MariaDB normally
