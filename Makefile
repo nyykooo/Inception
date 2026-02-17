@@ -1,20 +1,29 @@
 #.PHONY forces the command listed to be executed avoinding even if there is a file with the same name
 .PHONY: all build up start down stop restart 
 
-# $(c) allows the command to receive an specific container as argument
 all: build
 build:
-	docker compose -p inception -f docker-compose.yml build $(c)
+# 	mkdir ${HOME}/data ${HOME}/data/db_data ${HOME}/data/wp_data
+	docker-compose -p inception -f ./docker-compose.yml build
 up:
-	docker compose -f docker-compose.yml up -d $(c)
+	docker-compose -f ./docker-compose.yml up -d
 start:
-	docker compose -f docker-compose.yml start $(c)
+	docker-compose -f ./docker-compose.yml start
 down:
-	docker compose -f docker-compose.yml down $(c)
+	docker-compose -f ./docker-compose.yml down -v --remove-orphans
 stop:
-	docker compose -f docker-compose.yml stop $(c)
+	docker-compose -f ./docker-compose.yml stop
 restart:
-	docker compose -f docker-compose.yml restart
+	docker-compose -f ./docker-compose.yml restart
+prune:
+	docker system prune --all --volumes --force
+prune_net:
+	docker network prune --force
+
+fclean: down prune prune_net
+# 	rm -rfd ${HOME}/data
+
+re: fclean build
 
 logs:
 	cd srcs && docker-compose logs

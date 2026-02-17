@@ -1,7 +1,8 @@
 #!/bin/bash
 
-MYSQL_DATABASE=mariadb
-MYSQL_USER=ncampbel
+# GET SECRETS
+DB_ROOT_PASSWORD=$(cat /run/secrets/db_root_password)
+DB_USER_PASSWORD=$(cat /run/secrets/db_user_password)
 
 # The code bellow is included in mariadb image, but as I'm creating my own image,
 # I must guarantee that the mariadb is configured before creating a DB in it

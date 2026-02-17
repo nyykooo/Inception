@@ -1,0 +1,31 @@
+services:
+  mariadb:
+    image: mariadb:db
+    build:
+      context: $MARIADB
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    environment:
+      DB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      DB_USER_PASSWORD_FILE: /run/secrets/db_user_password
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_DATABASE: $MYSQL_DATABASE
+    secrets:
+      - db_root_password
+      - db_user_password
+    volumes:
+      - db_data:/etc/data 
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost:3306" ]
+
+volumes:
+  db_data:
+
+secrets:
+  db_root_password: 
+    file: ./secrets/db_root_password.txt
+  db_user_password: 
+    file: ./secrets/db_user_password.txt
+
