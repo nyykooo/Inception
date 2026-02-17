@@ -1,13 +1,8 @@
 FROM debian:bookworm
 
-
-# RUN apt-get update && \
-#     apt-get install -y mariadb-server
-
 RUN apt update && apt upgrade -y && \
 apt install -y mariadb-server && \
 rm -rf /var/lib/apt/lists/*
-
 
 RUN mkdir -p /var/run/mysqld \
 && chown mysql:mysql /var/run/mysqld \

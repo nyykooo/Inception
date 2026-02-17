@@ -2,6 +2,13 @@
 
 set -e
 
+# GET SECRETS
+DB_USER_PASSWORD=$(cat /run/secrets/db_user_password)
+WP_ADMIN_PASSWORD=$(cat /run/secrets/wp_admin_password)
+WP_ADMIN_EMAIL=$(cat /run/secrets/wp_admin_email)
+WP_USER_PASSWORD=$(cat /run/secrets/wp_admin_password)
+WP_USER_EMAIL=$(cat /run/secrets/wp_user_email)
+
 cd /var/www/html
 
 # verify/test if wp-config.php file exists
@@ -19,8 +26,8 @@ wp core download --allow-root
 wp config create \
     --dbname=$(MYSQL_DATABASE) \
     --dbuser=$(MYSQL_USER) \
-    --dbpass=$(MYSQL_PASSWORD) \
-    --dbhost=$(MYSQL_HOST) \
+    --dbpass=$(DB_USER_PASSWORD) \
+    --dbhost=$(DB_HOST) \
     --locale=en_US \
     --allow-root
 
@@ -36,8 +43,8 @@ wp core install \
 
 # create a new user
 wp user create \
-    $(WP_USER) \
-    $(WP_USER_EMAIL) \
+    --user=$(WP_USER) \
+    --email=$(WP_USER_EMAIL) \
     --user_pass=$(WP_USER_PASSWORD) \
     --role=subscriber \
     --allow-root

@@ -3,7 +3,6 @@
 
 all: build
 build:
-# 	mkdir ${HOME}/data ${HOME}/data/db_data ${HOME}/data/wp_data
 	docker-compose -p inception -f ./docker-compose.yml build
 up:
 	docker-compose -f ./docker-compose.yml up -d
@@ -21,7 +20,6 @@ prune_net:
 	docker network prune --force
 
 fclean: down prune prune_net
-# 	rm -rfd ${HOME}/data
 
 re: fclean build
 
