@@ -55,7 +55,7 @@ services:
       - db_user_password
     restart: always
     volumes:
-      - wp_data:/etc/data
+      - wp_data:/var/www/html
     depends_on:
       mariadb:
         condition: service_healthy

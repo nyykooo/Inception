@@ -21,7 +21,11 @@ RUN apt-get update && \
     # reads EXIF (Exchangeable Image File Format) metadata from images
     php-exif \
     # install curl to get wp-cli
-    curl
+    curl \
+    # install netcat to check mariadb container
+    netcat-openbsd
+
+RUN mkdir -p /run/php
 
 RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
     chmod +x wp-cli.phar && \
@@ -35,4 +39,5 @@ RUN chmod +x /usr/local/bin/wp-cli.sh
 
 EXPOSE 9000
 
-CMD ["/usr/local/bin/wp-cli.sh"]
+ENTRYPOINT ["/usr/local/bin/wp-cli.sh"]
+# CMD ["php-fpm8.2", "-F"]
