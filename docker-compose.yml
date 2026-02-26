@@ -2,11 +2,11 @@ services:
   mariadb:
     image: mariadb:1.0
     container_name: mariadb
+    networks: 
+      - inception
     build:
       context: $MARIADB
       dockerfile: Dockerfile
-    ports:
-      - "3306:3306"
     environment:
       DB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
       DB_USER_PASSWORD_FILE: /run/secrets/db_user_password
@@ -16,7 +16,7 @@ services:
       - db_root_password
       - db_user_password
     volumes:
-      - db_data:/etc/data 
+      - db_data:/var/lib/mysql
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$(cat /run/secrets/db_root_password) || exit 1" ]
@@ -27,13 +27,13 @@ services:
       - .env
 
   wordpress:
-    image: wordpress:wp
+    image: wordpress:1.0
     container_name: wordpress
+    networks: 
+      - inception
     build:
       context: $WORDPRESS
       dockerfile: Dockerfile
-    ports:
-      - "9000:9000"
     environment:
       WP_ADMIN_PASSWORD_FILE: /run/secrets/wp_admin_password
       WP_ADMIN_EMAIL_FILE: /run/secrets/wp_admin_email
@@ -53,7 +53,7 @@ services:
       - wp_admin_email
       - wp_user_email
       - db_user_password
-    restart: always
+    restart: unless-stopped
     volumes:
       - wp_data:/var/www/html
     depends_on:
@@ -62,10 +62,41 @@ services:
     env_file:
       - .env
 
+  nginx:
+    image: nginx:server
+    container_name: nginx
+    networks: 
+      - inception
+    build:
+      context: $NGINX
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    restart: always
+    depends_on: 
+      - "wordpress"
+    volumes:
+      - wp_data:/var/www/html
 
 volumes:
-  db_data:
-  wp_data:
+  db_data: 
+    name: db_data
+    driver: local
+    driver_opts:
+        type: none
+        o: bind
+        device: /home/ncampbel/Data/db_data
+  wp_data: 
+    name: wp_data
+    driver: local
+    driver_opts:
+        type: none
+        o: bind
+        device: /home/ncampbel/Data/wp_data
+
+networks:
+  inception:
+    driver: bridge
 
 secrets:
   db_root_password: 

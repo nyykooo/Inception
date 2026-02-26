@@ -14,9 +14,9 @@ WP_USER_EMAIL=$(cat /run/secrets/wp_user_email)
 # echo "MariaDb not ready yet";
 # sleep 2;
 # done
-echo "Waiting for MariaDB TCP port..."
-until nc -z "$DB_HOST" 3306; do
-	sleep 1
+echo "Waiting for MariaDB to be ready..."
+until mysql -h "$DB_HOST" -u "$MYSQL_USER" -p"$DB_USER_PASSWORD" -e "SELECT 1" >/dev/null 2>&1; do
+    sleep 1
 done
 echo "MariaDB is ready!"
 
@@ -25,13 +25,15 @@ echo "MariaDB is ready!"
 # or contains a bug, it could potentially compromise the entire server
 # as this environment is controlled and safe from this risks, I will use --allow-root
 # to give full acess and install the wp properly
-wp core download --allow-root
+
+
 
 cd /var/www/html
 
 # creates a configuration file with the db created by mariadb container
 if [ ! -f wp-config.php ]; then
-    echo "wp-config.php does not exist...\n creating configuration file"
+    wp core download --allow-root --force
+    echo "wp-config.php does not exist...\ncreating configuration file"
     wp config create \
         --dbname="${MYSQL_DATABASE}" \
         --dbuser="${MYSQL_USER}" \
@@ -40,39 +42,43 @@ if [ ! -f wp-config.php ]; then
         --locale=en_US \
         --allow-root
 else
-    echo "wp-config.php exists...\n making sure it has the right configs"
-    wp config set DB_NAME "${MYSQL_DATABASE}" --raw --allow-root
-    wp config set DB_USER "${MYSQL_USER}" --raw --allow-root
-    wp config set DB_PASSWORD "${DB_USER_PASSWORD}" --raw --allow-root
-    wp config set DB_HOST "${DB_HOST}" --raw --allow-root
+    echo "wp-config.php exists...\nmaking sure it has the right configs"
+    wp config set DB_NAME "${MYSQL_DATABASE}" --allow-root
+    wp config set DB_USER "${MYSQL_USER}" --allow-root
+    wp config set DB_PASSWORD "${DB_USER_PASSWORD}" --allow-root
+    wp config set DB_HOST "${DB_HOST}" --allow-root
 
 fi
 
-    if ! wp core is-installed --allow-root; then
-        # install wordpress through github repo
-        echo installing wordpress through github repo
-        wp core install \
-            --url="${WP_URL}" \
-            --title="${WP_TITLE}" \
-            --admin_user="${WP_ADMIN_USER}" \
-            --admin_email="${WP_ADMIN_EMAIL}" \
-            --admin_password="${WP_ADMIN_PASSWORD}" \
-            --skip-email \
-            --allow-root
+if ! wp core is-installed --allow-root; then
+    # install wordpress through github repo
+    echo installing wordpress through github repo
+    wp core install \
+        --url="${WP_URL}" \
+        --title="${WP_TITLE}" \
+        --admin_user="${WP_ADMIN_USER}" \
+        --admin_email="${WP_ADMIN_EMAIL}" \
+        --admin_password="${WP_ADMIN_PASSWORD}" \
+        --skip-email \
+        --allow-root
+else
+    if wp user get "${WP_ADMIN_USER}" --field=ID --allow-root; then
+        echo updating admin user
+        wp user update "${WP_ADMIN_USER}" \
+            --user_pass="${WP_ADMIN_PASSWORD}" \
+            --role=administrator \
+            --allow-root || true
     else
-        if wp user get "${WP_ADMIN_USER}" --field=ID --allow-root; then
-            echo updating admin user
-            wp user update "${WP_ADMIN_USER}" \
-                --user_pass="${WP_ADMIN_PASSWORD}" \
-                --role=administrator \
-                --allow-root || true
-        else
-            # create a new user
-            echo create a new user
-            wp user create \
-                --user_pass="${WP_ADMIN_PASSWORD}" \
-                --role=administrator \
-                --allow-root || true
-        fi
+        # create a new user
+        echo create a new user
+        wp user create \
+            --user_pass="${WP_ADMIN_PASSWORD}" \
+            --role=administrator \
+            --allow-root || true
     fi
+fi
+
+chown -R www-data:www-data /var/www/html 
+chmod -R 755 /var/www/html
+
 exec php-fpm8.2 -F

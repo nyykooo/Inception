@@ -3,6 +3,7 @@
 
 all: build
 build:
+	@mkdir -p /home/ncampbel/Data/db_data /home/ncampbel/Data/wp_data
 	docker-compose -p inception -f ./docker-compose.yml build
 up:
 	docker-compose -f ./docker-compose.yml up -d
@@ -15,7 +16,9 @@ stop:
 restart:
 	docker-compose -f ./docker-compose.yml restart
 prune:
-	docker system prune --all --volumes --force
+	docker system prune --all --volumes --force \
+	&& docker volume ls -q | xargs -r docker volume rm \
+	&& rm -rfdR /home/ncampbel/Data
 prune_net:
 	docker network prune --force
 
